@@ -1,0 +1,687 @@
+Senha do dvdRental: password
+
+
+===============================
+
+select title, description, sum(rental_rate)
+from film
+group by title, description
+having sum(rental_rate) between 0.98 and 2.99
+order by sum
+
+===============================
+
+#Filme com maior soma:
+
+SELECT title, description, SUM(rental_rate) AS total
+FROM film
+GROUP BY title, description
+ORDER BY total DESC
+LIMIT 1;
+
+===============================
+
+#valor maximo:
+
+SELECT MAX(soma) AS maior_soma
+FROM (
+    SELECT SUM(rental_rate) AS soma
+    FROM film
+    GROUP BY title, description
+) AS sub;
+
+===============================
+
+#Mostra a quantidade de valores diferentes que possui na coluna release_year da tabela film
+
+select distinct release_year
+from film
+
+#Mostra apenas os valores diferentes da coluna rental_rate da tabela film
+
+select distinct rental_rate
+from film
+
+select distinct rating 
+from film
+
+select distinct(amount) from payment
+
+select count(distinct(district))
+from address
+
+===============================
+
+#Mostrar a quantidade de linhas que a tabela payment possui
+
+select count(*) 
+from payment
+
+#Conta quantos valores distintos a coluna amount possui na tabela payment
+
+select count(distinct amount) 
+from payment
+
+===============================
+
+select * from customer
+where first_name = 'Jared'
+
+select * from film
+where rental_rate > 4
+
+select * from film
+where rental_rate > 4
+and replacement_cost >= 19.99
+
+# mostrar a quantidade de linhas que se encaixam no seguinte parametro
+select count(*) from film
+where rental_rate > 4
+and replacement_cost >= 19.99
+
+select count(*) from film
+where rating = 'R' or rating = 'PG-13'
+
+select * from film
+where rating != 'R'
+
+select count(*) from film
+where rating = 'R'
+and replacement_cost between 5 and 15
+
+===============================
+
+# deixar em ordem alfabetica ou numeral de acordo com o parametro passado
+# se o primeiro parametro for repetido, ele vai buscar pela ordem do segundo parametro
+
+select * from customer
+order by first_name
+
+select * from customer
+order by store_id
+
+select store_id, first_name, last_name from customer
+order by store_id, first_name
+
+select store_id, first_name, last_name from customer
+order by store_id desc, first_name asc
+
+===============================
+
+# vai mostrar apenas o número de resultados estipulado em limit
+
+select * from payment
+order by payment_date desc
+limit 5
+
+===============================
+
+select * from payment
+where amount between 8 and 9
+
+select count(*) from payment
+where amount between 8 and 9
+
+select count(*) from payment
+where amount not between 8 and 9
+
+select * from payment
+where payment_date between '2007-02-01' and '2007-02-15'
+
+===============================
+
+# seleciona apenas os parametros informados
+
+select * from payment
+where amount in (0.99, 1.98, 1.99)
+
+select * from payment
+where amount not in (0.99, 1.98, 1.99)
+
+select count(*) from payment
+where amount not in (0.99, 1.98, 1.99)
+
+select * from customer
+where first_name in ('John', 'Jake', 'Julie')
+
+===============================
+
+# ilike não é case sensitive, mas só existe no postgre
+# o _ significa que há apenas 1 caracter em sua posição
+
+select * from customer
+where first_name like 'J%'
+
+select count(*) from customer
+where first_name like 'J%'
+
+select count(*) from customer
+where first_name like 'J%' and last_name like 'S%'
+
+select * from customer
+where first_name like 'J%' and last_name like 'S%'
+
+select * from customer
+where first_name like '%er%'
+
+select * from customer
+where first_name like '_her%'
+
+select * from customer
+where first_name like 'A%' and last_name not like 'B%'
+
+select count(*) from film
+where title like '%Truman%'
+
+===============================
+
+# se for passar 2 parametros, é necessário que se refiram a apenas 1 coluna
+
+select max(replacement_cost), min(replacement_cost)
+from film
+
+select sum(replacement_cost)
+from film
+
+select avg(replacement_cost)
+from film
+
+select round(avg(replacement_cost),2)
+from film
+
+===============================
+
+# group by pode ser usado para: avg(), count(), max(), min(), sum()
+# group by agrupa valores, do qual a coluna logo após o select é repetido e, após, faz a operação informada
+
+-é o mesmo que selecionar apenas os distintos
+select customer_id 
+from payment
+group by customer_id
+
+select customer_id, sum(amount)
+from payment
+group by customer_id
+
+select customer_id, sum(amount)
+from payment
+group by customer_id
+order by sum(amount)
+
+select customer_id, count(amount)
+from payment
+group by customer_id
+order by count(amount) desc
+
+select customer_id, staff_id, sum(amount) 
+from payment
+group by staff_id, customer_id
+
+select date(payment_date), sum(amount)
+from payment
+group by date(payment_date)
+
+select date(payment_date), sum(amount)
+from payment
+group by date(payment_date)
+order by sum(amount) desc
+
+select rating, avg(replacement_cost)
+from film
+group by rating
+
+===============================
+
+select customer_id, sum(amount)
+from payment
+group by customer_id
+having sum(amount) > 100
+
+select store_id, count(*)
+from customer
+group by store_id
+having count(*) > 300
+
+select customer_id, count(*)
+from payment
+group by customer_id
+having count(*) >= 40
+
+select customer_id, sum(amount)
+from payment
+where staff_id = 2
+group by customer_id
+having sum(amount) > 100
+
+===============================
+
+select * from payment
+inner join customer
+on payment.customer_id = customer.customer_id
+
+# com inner join eu posso dar o select eu qualquer coluna que estiver em ambas tabelas, mas se for igual é necessário especificar, como no caso payment.customer_id
+# no on, as duas colunas precisam estar em ambas tabelas
+
+select payment_id, payment.customer_id, first_name
+from customer
+inner join payment
+on payment.customer_id = customer.customer_id
+
+===============================
+
+select * from customer 
+full outer join payment
+on customer.customer_id = payment.customer_id
+
+# unir as tabelas customer e payment onde customer_id é igual em ambas com a condição especificado no where
+
+select * from customer 
+full outer join payment
+on customer.customer_id = payment.customer_id
+where customer.customer_id is null
+or payment.payment_id is null
+
+===============================
+
+# o que esta depois do from é a esquerda
+# garante que todos os dados da coluna film aparece no resultado
+# pode ser que na tabela inventory tenha mais film_id que não esteja na tabela film
+
+select film.film_id, title, inventory_id, store_id
+from film
+left join inventory
+on inventory.film_id = film.film_id
+
+# filtra só os filmes que não têm cópia cadastrada no inventário
+
+select film.film_id, title, inventory_id, store_id
+from film
+left join inventory
+on inventory.film_id = film.film_id
+where inventory.film_id is null
+
+===============================
+
+select film.film_id, title, inventory_id, store_id
+from inventory
+right join film
+on film.film_id = inventory.film_id;
+
+select film.film_id, title, inventory_id, store_id, inventory.film_id
+from inventory
+right join film
+on film.film_id = inventory.film_id;
+
+select * from film
+
+select * from from inventory
+
+
+===============================
+
+show all
+
+show timezone
+
+select now()
+
+select timeofday()
+
+select current_time
+
+select current_date
+
+===============================
+
+select extract(year from payment_date)
+from payment
+
+select extract (month from payment_date)
+from payment
+
+select extract(quarter from payment_date)
+from payment
+
+select age(payment_date)
+from payment
+
+select to_char(payment_date, 'month')
+from payment
+
+select to_char(payment_date, 'month-YYYY')
+from payment
+
+select to_char(payment_date, 'mon-dd-YYYY')
+from payment
+
+select distinct(to_char(payment_date, 'month'))
+from payment
+
+# dow significa day of the week, onde monday é o número 1 e assim por diante
+
+select count(*)
+from payment
+where extract(dow from payment_date) = 1
+
+===============================
+
+#dividir valor das duas colunas
+
+select rental_rate/replacement_cost 
+from film
+
+select round(rental_rate/replacement_cost,2) 
+from film
+
+#Para mostrar em termos de porcentagem, faça:
+
+select round(rental_rate/replacement_cost,2) * 100
+from film
+
+#para saber 10% do valor da coluna
+
+select 0.1 * replacement_cost 
+from film
+
+#quantidade de letras
+
+select length(first_name)
+from customer
+
+#concatenar
+
+select first_name || last_name
+from customer
+
+select first_name || ' ' || last_name
+from customer
+
+select upper(first_name) || ' ' || last_name
+from customer
+
+select upper(first_name) || ' ' || upper(last_name)
+from customer
+
+select first_name || last_name || '@gmail.com'
+from customer
+
+# o left vai pegar apenas a quantidade de letras que esta depois da virgula
+
+select left(first_name,1) || last_name || '@gmail.com'
+from customer
+
+# o lower é para letra minuscula
+
+select lower(left(first_name,1)) || lower(last_name) || '@gmail.com' as custom email
+from customer
+
+===============================
+
+# a sub query "(select avg (rental_rate) from film)" tem o valor de 2.98
+
+select title, rental_rate
+from film
+where rental_rate > (select avg (rental_rate) from film)
+
+select inventory.film_id
+from rental
+inner join inventory 
+on inventory.inventory_id = rental.inventory_id
+where return_date between '2005-05-29' and '2005-05-30'
+
+select film_id, title
+from film
+where film_id in 
+(select inventory.film_id
+from rental
+inner join inventory 
+on inventory.inventory_id = rental.inventory_id
+where return_date between '2005-05-29' and '2005-05-30')
+
+select first_name, last_name
+from customer as c
+where exists
+(select * from payment as p
+where p.customer_id = c.customer_id
+and amount > 11)
+
+===============================
+
+select f1.title, f2.title, f1.length
+from film as f1
+inner join film as f2
+on f1.film_id = f2.film_id
+and f1.length = f2.length
+
+#O resultado será uma lista de pares de filmes diferentes que compartilham a mesma duração em minutos. Por exemplo, poderia mostrar que "Avatar" e "Star Wars" têm ambos 126 minutos de duração.
+
+select f1.title, f2.title, f1.length
+from film as f1
+inner join film as f2
+on f1.film_id != f2.film_id
+and f1.length = f2.length
+
+===============================
+
+# varchar(50) segnifica que aquele campo só pode ter 50 caracteres
+
+create table account(
+user_id serial primary key,
+username varchar(50) unique not null,
+password varchar(50) not null,
+email varchar(250) unique not null,
+created_on timestamp not null,
+last_login timestamp
+)
+
+# se a tabela acima foi criada, não é necessário colocar serial para o user_id da tabela abaixo, apenas referenciar a tabela acima 
+
+create table account_job(
+user_id integer references account(user_id),
+job_id integer references job(job_id),
+hire_date timestamp
+)
+
+# inserir dados na tabela 
+
+insert into account(username, password, email, created_on)
+values
+('jose', 'password123', 'jose@gmail.com', current_timestamp)
+
+# fazer update na tabela account criada acima
+
+# atualiza a coluna last_login na tabela account, definindo seu valor igual ao valor da coluna created_on para todos os registros na tabela
+
+update account
+set last_login = created_on
+
+update account
+set last_login = current_timestamp
+returning email, created_on, username
+
+# no lugar de email poderia ser qualquer outro parametro que identificasse a coluna
+
+update account
+set username = 'novo_username'
+where email = 'email@exemplo.com';
+
+update account
+set username = 'novo_username',
+    email = 'novo_email@exemplo.com',
+    password = 'nova_senha',
+    last_login = CURRENT_TIMESTAMP
+where user_id = 123;
+
+update account_job
+set hire_date = account.created_on
+from account
+where account_job.user_id = account.user_id
+
+# deletar
+
+delete from account
+where username = 'jose'
+
+delete from account
+where last_login is NULL;
+
+delete from account
+where username = 'jose'
+returning username, email, created_on
+
+# dropar
+
+drop table account
+
+===============================
+
+#alter
+
+create table information(
+info_id serial primary key,
+title varchar(500) not null
+person varchar(50) not null unique
+)
+
+#alterar o nome da tabela
+
+alter table information
+rename to new_info
+
+#alterar o nome da coluna person para people
+
+alter table information
+rename column person to people
+
+#remover a restrição de uma coluna
+
+alter table information
+alter column people drop not null
+
+
+===============================
+
+# claasifica os customers de acordo com os parametros, senão registrao status 'normal'
+
+select customer_id,
+case
+ when (customer_id <= 100) then 'premium'
+ when (customer_id between 100 and 200) then 'plus'
+ else 'normal'
+end
+from customer
+
+select customer_id,
+case
+ when (customer_id <= 100) then 'premium'
+ when (customer_id between 100 and 200) then 'plus'
+ else 'normal'
+end as customer_class
+from customer
+
+select customer_id
+case customer_id
+ when 2 then 'winner'
+ when 5 then 'second place'
+ else 'normal'
+end as raffle_results
+from customer
+
+select rental_rate
+case rental_rate
+ when 0.99 then 1 
+ else 0
+end
+from film
+
+select 
+sum(case rental_rate
+ when 0.99 then 1
+ else 0
+end) as number_of_bargains
+from film
+
+# precisa da virgula
+
+select 
+sum(case rental_rate
+ when 0.99 then 1
+ else 0
+end) as number_of_bargains,
+sum(case rental_rate
+ when 2.99 then 1
+ else 0
+end) as regular
+from film
+
+select 
+sum(case rental_rate
+ when 0.99 then 1
+ else 0
+end) as bargains,
+sum(case rental_rate
+ when 2.99 then 1
+ else 0
+end) as regular,
+sum(case rental_rate
+ when 4.99 then 1
+ else 0
+end) as premium
+from film
+
+===============================
+
+# os dois codigos abaixo fazem a mesma coisa, mudar o que esta dentro de '' para o datatype especificado
+
+select cast('5' as integer)
+
+select '5'::integer
+
+
+select cast(inventory_id as varchar) from rental
+
+select char_length(cast(inventory_id as varchar)) from rental
+
+===============================
+
+#a consulta retornará um único valor: o número total de registros onde o departamento é 'A'.
+
+select(
+sum(case when department = 'A' then 1 else 0 end)
+)
+from depts
+
+select(
+sum(case when department = 'A' then 1 else 0 end)/
+sum(case when department = 'B' then 1 else 0 end)
+) as department_ratio
+from depts
+
+# calcula a proporção entre a quantidade de registros com department = 'A' e a quantidade de registros com department = 'B', evitando erros de divisão por zero.
+#se o nullif for 0, então retornará null
+
+select(
+sum(case when department = 'A' then 1 else 0 end)/
+ nullif(sum(case when department = 'B' then 1 else 0 end), 0)
+) as department_ratio
+from depts
+
+===============================
+
+create view customer_info as
+select first_name, last_name, address 
+from customer
+inner join address
+on customer.address_id = address.address_id
+
+# depois que fizer o create view, basta pesquisar 
+
+select * from customer_info
+
+===============================
+
+create or replace view customer_info as
+select first_name, last_name, address, district
+from customer
+inner join address
+on customer.address_id = address.address_id
